@@ -5,6 +5,7 @@ import me.cg360.lib.stattrack.util.Verify;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class StatisticCollection {
 
@@ -18,6 +19,12 @@ public class StatisticCollection {
         this.statisticWatchers = new HashMap<>();
     }
 
+    /**
+     * Creates a statistic watcher if one doesn't already exist for
+     * this collection.
+     *
+     * @return a new StatisticWatcher if not present, else the currently present StatisticWatcher
+     */
     public StatisticWatcher createStatistic(String id) {
         String fID = Verify.andCorrectStatisticID(id);
 
@@ -31,4 +38,14 @@ public class StatisticCollection {
         }
     }
 
+    /** @return an optional wrapping. If present, the optional will contain the appropriate StatisticWatcher. */
+    public Optional<StatisticWatcher> getStatistic(String id) {
+        String fID = Verify.andCorrectStatisticID(id);
+        return Optional.ofNullable(statisticWatchers.get(fID));
+    }
+
+    /** @return the entity associated with the listed StatisticWatcher instances. */
+    public ITrackedEntityID getTarget() {
+        return target;
+    }
 }
