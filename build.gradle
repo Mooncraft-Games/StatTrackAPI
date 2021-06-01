@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+}
+
+group 'me.cg360.lib'
+version '1.0-PREVIEW'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://repo.nukkitx.com/maven-snapshots'
+    }
+    maven {
+        url = 'https://repo.opencollab.dev/maven-releases/'
+    }
+    maven {
+        url = 'https://repo.opencollab.dev/maven-snapshots/'
+    }
+}
+
+jar {
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+dependencies {
+    compile 'com.nukkitx:nbt:2.0.1'
+    implementation 'cn.nukkit:nukkit:1.0-SNAPSHOT'
+
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+
+    compile fileTree(dir: 'libs/compile', include: '*.jar')
+    implementation fileTree(dir: 'libs/runtime', include: '*.jar')
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
