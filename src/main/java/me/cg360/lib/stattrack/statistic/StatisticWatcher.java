@@ -24,6 +24,8 @@ public class StatisticWatcher {
         this.hasFetched = false;
     }
 
+
+
     public boolean fetchRemote() {
         Optional<Double> val = StatTrackAPI.get().getStorageProvider().fetchRemoteValue(this.target, this.statisticID);
 
@@ -47,6 +49,23 @@ public class StatisticWatcher {
         }
         return false;
     }
+
+
+    public void resetLocal(){
+        this.valueDelta = 0;
+    }
+
+    public boolean resetRemote(){
+        return StatTrackAPI.get().getStorageProvider().pushRemoteTotalValue(this.target, this.statisticID, 0);
+    }
+
+
+    public void increment(){ modify( 1); }
+    public void decrement(){ modify(-1); }
+    public void modify(int amount) {
+        this.valueDelta += amount;
+    }
+
 
     /** @return the local server's perceived value of this statistic. */
     public double getValue() {
