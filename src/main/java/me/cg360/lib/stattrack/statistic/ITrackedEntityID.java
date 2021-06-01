@@ -8,7 +8,7 @@ package me.cg360.lib.stattrack.statistic;
  * "Entity" in this case does not force it to be equivalent to a
  * Minecraft Entity.
  */
-public interface ITrackedEntity {
+public interface ITrackedEntityID {
 
     String getEntityType();
     String getStoredID();
