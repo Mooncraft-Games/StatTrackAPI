@@ -25,11 +25,24 @@ public class StatisticWatcher {
     }
 
     public boolean fetchRemote() {
-        Optional<Double> val = StatTrackAPI.get().getStorageProvider().fetchRemoteValue(this.target);
+        Optional<Double> val = StatTrackAPI.get().getStorageProvider().fetchRemoteValue(this.target, this.statisticID);
 
         if(val.isPresent()) {
             this.hasFetched = true;
             this.valueRemote = val.get();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean pushRemote() {
+        boolean result = StatTrackAPI.get().getStorageProvider().pushRemoteDeltaValue(this.target, this.statisticID, this.valueDelta);
+
+        if(result) {
+            // If successfully pushed, reset the delta.
+            // The remote value could be due a reset but, for now, retain it.
+            this.valueRemote += valueDelta;
+            this.valueDelta = 0;
             return true;
         }
         return false;
