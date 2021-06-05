@@ -6,6 +6,7 @@ group 'me.cg360.lib'
 version '1.0-PREVIEW'
 
 sourceCompatibility = 1.8
+boolean isMadBlockCollection = rootProject != project
 
 repositories {
     mavenCentral()
@@ -27,16 +28,18 @@ jar {
 }
 
 dependencies {
-    compile 'com.nukkitx:nbt:2.0.1'
-    implementation 'cn.nukkit:nukkit:1.0-SNAPSHOT'
+    if(isMadBlockCollection) {
+        compile 'com.nukkitx:nbt:2.0.1'
+        compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
-    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    } else {
+        implementation 'cn.nukkit:nukkit:1.0-SNAPSHOT'
+        compile 'com.nukkitx:nbt:2.0.1'
 
-    compile fileTree(dir: 'libs/compile', include: '*.jar')
-    implementation fileTree(dir: 'libs/runtime', include: '*.jar')
-}
+        compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
-java {
-    withSourcesJar()
-    withJavadocJar()
+        // Include MadBlockDatabase. Might be replaced in a future version.
+        compile fileTree(dir: 'libs/compile', include: '*.jar')
+        implementation fileTree(dir: 'libs/runtime', include: '*.jar')
+    }
 }
