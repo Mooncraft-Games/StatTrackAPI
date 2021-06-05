@@ -10,6 +10,9 @@ package me.cg360.lib.stattrack.statistic;
  */
 public interface ITrackedEntityID {
 
+    String BEDROCK_AUTH_PLAYER_TYPE = "xuid";
+    String SERVER_TYPE = "server"; // ip@port
+
     String getEntityType();
     String getStoredID();
 
