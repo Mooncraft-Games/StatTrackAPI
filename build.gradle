@@ -31,6 +31,7 @@ dependencies {
     if(isMadBlockCollection) {
         compile 'com.nukkitx:nbt:2.0.1'
         compile group: 'commons-io', name: 'commons-io', version: '2.6'
+        implementation project(":Tool:Database")
 
     } else {
         implementation 'cn.nukkit:nukkit:1.0-SNAPSHOT'
