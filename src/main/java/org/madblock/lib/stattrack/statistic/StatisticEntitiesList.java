@@ -57,6 +57,11 @@ public class StatisticEntitiesList {
         return Optional.ofNullable(statisticEntities.get(fID));
     }
 
+
+    public synchronized StatisticCollection[] getStatisticEntities() {
+        return statisticEntities.values().toArray(new StatisticCollection[0]);
+    }
+
     public static StatisticEntitiesList get() {
         return entityList;
     }

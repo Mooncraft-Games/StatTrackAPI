@@ -26,6 +26,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
     // TODO: Config options
     protected boolean config_handlePlayerStatistics = true;
     protected boolean config_countPlayerJoins = true; // requires above ^
+    protected int config_updateTicks = 4000;
 
     @Override
     public void onEnable() {
@@ -38,6 +39,15 @@ public class StatTrackAPI extends PluginBase implements Listener {
             this.statisticEntitiesList.setAsPrimaryList();
 
             this.getServer().getPluginManager().registerEvents(this, this);
+            this.getServer().getScheduler().scheduleDelayedRepeatingTask(this, () -> {
+                StatisticCollection[] stats = statisticEntitiesList.getStatisticEntities();
+
+                for(StatisticCollection s: stats) {
+                    s.pushStatisticsToStorage();
+                    s.fetchStatisticsFromStorage();
+                }
+
+            }, config_updateTicks, config_updateTicks, true);
 
         } catch (Exception err) {
             plugin = null;
