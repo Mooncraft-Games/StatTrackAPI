@@ -64,7 +64,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
                         getLogger().warning(String.format("Failed to fetch player %s's stat records.", Util.getPlayerEntityID(event.getPlayer())));
 
                     } else if(config_countPlayerJoins) {
-                        collection.createStatistic("network.joins").increment();
+                        collection.createStatistic(StatisticIDs.NETWORK_PLAYER_JOIN).increment();
                     }
                 }
 
