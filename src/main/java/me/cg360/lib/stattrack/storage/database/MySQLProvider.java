@@ -69,19 +69,41 @@ public class MySQLProvider implements IStorageProvider {
 
     @Override
     public boolean pushRemoteTotalValue(ITrackedEntityID entityID, String statisticID, double total) {
-        if(isInitialized) {
-
-        }
-        return false;
+        return pushValue(entityID, statisticID, total, false);
     }
 
     @Override
     public boolean pushRemoteDeltaValue(ITrackedEntityID entityID, String statisticID, double delta) {
-        if(isInitialized) {
+        return pushValue(entityID, statisticID, delta, true);
+    }
 
+    protected boolean pushValue(ITrackedEntityID entityID, String statisticID, double value, boolean isDelta) {
+        if(isInitialized) {
+            String statID = Verify.andCorrectStatisticID(statisticID);
+
+            ConnectionWrapper wrapper = null;
+            PreparedStatement stmt = null;
+            int code;
+            try {
+                wrapper = DatabaseAPI.getConnection(this.dataSourceName);
+                stmt = wrapper.prepareStatement(new DatabaseStatement(isDelta ? PUSH_DELTA : PUSH_ABSOLUTE, new Object[]{ entityID.getEntityType(), entityID.getStoredID(), statID, value, value } ));
+                code = stmt.executeUpdate();
+                stmt.close();
+
+            } catch (SQLException exception) {
+                StatTrackAPI.get().getLogger().error(String.format("Failed to push statistic %s value.", isDelta ? "delta" : "total"));
+                exception.printStackTrace();
+                return false;
+
+            } finally {
+                if (stmt != null) DatabaseUtility.closeQuietly(stmt);
+                if (wrapper != null) DatabaseUtility.closeQuietly(wrapper);
+            }
+            return code > 0;
         }
         return false;
     }
+
 
     public String getDataSourceName() { return dataSourceName; }
     public boolean isInitialized() { return isInitialized; }
