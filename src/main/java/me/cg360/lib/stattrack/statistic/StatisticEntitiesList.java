@@ -6,7 +6,7 @@ import java.util.Optional;
 public class StatisticEntitiesList {
 
     protected static StatisticEntitiesList entityList;
-    protected HashMap<String, StatisticCollection> statisticEntities;
+    protected final HashMap<String, StatisticCollection> statisticEntities;
 
     public StatisticEntitiesList() {
         this.statisticEntities = new HashMap<>();
@@ -34,20 +34,25 @@ public class StatisticEntitiesList {
 
     public StatisticCollection createCollection(ITrackedEntityID entityID, boolean fetchIfNotLoaded) {
         String fID = genEntityID(entityID);
+        StatisticCollection collection;
 
-        if(statisticEntities.containsKey(fID)) {
-            return statisticEntities.get(fID);
+        synchronized (statisticEntities) {
+            if (statisticEntities.containsKey(fID)) {
+                return statisticEntities.get(fID);
 
-        } else {
-            StatisticCollection collection = new StatisticCollection(entityID, fetchIfNotLoaded);
-            this.statisticEntities.put(fID, collection);
-            return collection;
+            } else {
+                collection = new StatisticCollection(entityID, false);
+                this.statisticEntities.put(fID, collection);
+            }
         }
+
+        if(fetchIfNotLoaded) collection.fetchStatisticsFromStorage();
+        return collection;
     }
 
 
 
-    public Optional<StatisticCollection> getCollection(ITrackedEntityID entityID) {
+    public synchronized Optional<StatisticCollection> getCollection(ITrackedEntityID entityID) {
         String fID = genEntityID(entityID);
         return Optional.ofNullable(statisticEntities.get(fID));
     }

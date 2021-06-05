@@ -5,6 +5,7 @@ import cn.nukkit.event.Listener;
 import cn.nukkit.event.player.PlayerJoinEvent;
 import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.plugin.PluginBase;
+import cn.nukkit.plugin.PluginLogger;
 import cn.nukkit.scheduler.AsyncTask;
 import me.cg360.lib.stattrack.statistic.ITrackedEntityID;
 import me.cg360.lib.stattrack.statistic.StatisticCollection;
@@ -61,7 +62,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
                 @Override
                 public void onRun() {
                     if(!collection.fetchStatisticsFromStorage()) {
-                        getLogger().warning(String.format("Failed to fetch player %s's stat records.", Util.getPlayerEntityID(event.getPlayer())));
+                        getSyncLogger().warning(String.format("Failed to fetch player %s's stat records.", Util.getPlayerEntityID(event.getPlayer())));
 
                     } else if(config_countPlayerJoins) {
                         collection.createStatistic(StatisticIDs.NETWORK_PLAYER_JOIN).increment();
@@ -86,7 +87,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
                     public void onRun() {
                         int fails = collection.pushStatisticsToStorage();
                         if(fails > 0) {
-                            getLogger().warning(String.format("Push to storage missed %s/%s of player %s's stat records.",
+                            getSyncLogger().warning(String.format("Push to storage missed %s/%s of player %s's stat records.",
                                     fails, collection.getStatisticRecordIDs().length, Util.getPlayerEntityID(event.getPlayer())
                             ));
                         }
@@ -101,5 +102,6 @@ public class StatTrackAPI extends PluginBase implements Listener {
     public StatisticEntitiesList getStatisticEntitiesList() { return statisticEntitiesList; }
 
     public static StatTrackAPI get() { return plugin; }
+    public static synchronized PluginLogger getSyncLogger() { return plugin.getLogger(); }
     public static boolean isActive() { return get() != null; }
 }

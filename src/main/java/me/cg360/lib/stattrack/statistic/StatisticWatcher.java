@@ -25,7 +25,7 @@ public class StatisticWatcher {
     }
 
     // Used by StatisticCollection
-    protected void addFetchedRemoteBulkEntry(double remoteValue) {
+    protected synchronized void addFetchedRemoteBulkEntry(double remoteValue) {
         this.hasFetched = true;
         this.valueRemote = remoteValue;
     }
@@ -48,8 +48,10 @@ public class StatisticWatcher {
             if (result) {
                 // If successfully pushed, reset the delta.
                 // The remote value could be due a reset but, for now, retain it.
-                this.valueRemote += valueDelta;
-                this.valueDelta = 0;
+                synchronized (this) {
+                    this.valueRemote += valueDelta;
+                    this.valueDelta = 0;
+                }
                 return true;
             }
             return false;
@@ -58,34 +60,37 @@ public class StatisticWatcher {
     }
 
 
-    public void resetLocal(){
+
+
+    public boolean resetRemote(){
+        boolean result = StatTrackAPI.get().getStorageProvider().pushRemoteTotalValue(this.target, this.statisticID, 0);
+        if(result) synchronized (this) { this.valueRemote = 0; }
+        return result;
+    }
+
+    public synchronized void resetLocal(){
         this.valueDelta = 0;
     }
 
-    public boolean resetRemote(){
-        return StatTrackAPI.get().getStorageProvider().pushRemoteTotalValue(this.target, this.statisticID, 0);
-    }
-
-
-    public void increment(){ modify( 1); }
-    public void decrement(){ modify(-1); }
-    public void modify(int amount) {
+    public synchronized void increment(){ modify( 1); }
+    public synchronized void decrement(){ modify(-1); }
+    public synchronized void modify(int amount) {
         this.valueDelta += amount;
     }
 
 
     /** @return the local server's perceived value of this statistic. */
     public double getValue() {
-        return valueRemote + valueDelta;
+        return getValueRemote() + getValueDelta();
     }
 
     /** @return the remote storage's value of this statistic. */
-    public double getValueRemote() {
+    public synchronized double getValueRemote() {
         return valueRemote;
     }
 
     /** @return the local server's changes to this statistic which haven't been saved yet. */
-    public double getValueDelta() {
+    public synchronized double getValueDelta() {
         return valueDelta;
     }
 }

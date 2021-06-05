@@ -53,7 +53,7 @@ public class MySQLProvider implements IStorageProvider {
                 wrapper = DatabaseAPI.getConnection(this.dataSourceName);
                 stmt = wrapper.prepareStatement(new DatabaseStatement(CREATE_STATS_TABLE));
                 stmt.execute();
-                this.isInitialized = true;
+                synchronized (this) { this.isInitialized = true; }
 
             } catch (SQLException exception) {
                 exception.printStackTrace();
@@ -85,7 +85,7 @@ public class MySQLProvider implements IStorageProvider {
                 stmt.close();
 
             } catch (SQLException exception) {
-                StatTrackAPI.get().getLogger().error(String.format("Failed to get statistic value for %s#%s: %s", entityID.getEntityType(), entityID.getStoredID(), statID));
+                StatTrackAPI.getSyncLogger().error(String.format("Failed to get statistic value for %s#%s: %s", entityID.getEntityType(), entityID.getStoredID(), statID));
                 exception.printStackTrace();
                 return Optional.empty();
 
@@ -124,7 +124,7 @@ public class MySQLProvider implements IStorageProvider {
                 stmt.close();
 
             } catch (SQLException exception) {
-                StatTrackAPI.get().getLogger().error(String.format("Failed to get entity statistics for %s#%s", entityID.getEntityType(), entityID.getStoredID()));
+                StatTrackAPI.getSyncLogger().error(String.format("Failed to get entity statistics for %s#%s", entityID.getEntityType(), entityID.getStoredID()));
                 exception.printStackTrace();
                 return Optional.empty();
 
@@ -133,8 +133,8 @@ public class MySQLProvider implements IStorageProvider {
                 if (wrapper != null) DatabaseUtility.closeQuietly(wrapper);
             }
 
-            if(error) StatTrackAPI.get().getLogger().warning(String.format("Error encountered while gathering stats for %s#%s. Results may be incomplete.", entityID.getEntityType(), entityID.getStoredID()));
-            if(duplicates > 0) StatTrackAPI.get().getLogger().warning(String.format("Duplicate statistic keys found while gathering stats for %s#%s.", entityID.getEntityType(), entityID.getStoredID()));
+            if(error) StatTrackAPI.getSyncLogger().warning(String.format("Error encountered while gathering stats for %s#%s. Results may be incomplete.", entityID.getEntityType(), entityID.getStoredID()));
+            if(duplicates > 0) StatTrackAPI.getSyncLogger().warning(String.format("Duplicate statistic keys found while gathering stats for %s#%s.", entityID.getEntityType(), entityID.getStoredID()));
 
             return Optional.of(data);
         }
@@ -166,7 +166,7 @@ public class MySQLProvider implements IStorageProvider {
                 stmt.close();
 
             } catch (SQLException exception) {
-                StatTrackAPI.get().getLogger().error(String.format("Failed to push statistic %s value.", isDelta ? "delta" : "total"));
+                StatTrackAPI.getSyncLogger().error(String.format("Failed to push statistic %s value.", isDelta ? "delta" : "total"));
                 exception.printStackTrace();
                 return false;
 
