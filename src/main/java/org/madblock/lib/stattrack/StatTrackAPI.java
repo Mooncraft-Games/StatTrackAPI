@@ -57,6 +57,10 @@ public class StatTrackAPI extends PluginBase implements Listener {
 
     @Override
     public void onDisable() {
+        if(plugin != null) {
+            StatisticCollection[] stats = statisticEntitiesList.getStatisticEntities();
+            for(StatisticCollection s: stats) s.pushStatisticsToStorage();
+        }
         plugin = null;
     }
 
