@@ -1,4 +1,4 @@
-package me.cg360.lib.stattrack.statistic;
+package org.madblock.lib.stattrack.statistic;
 
 public final class FinalEntityID implements ITrackedEntityID {
 

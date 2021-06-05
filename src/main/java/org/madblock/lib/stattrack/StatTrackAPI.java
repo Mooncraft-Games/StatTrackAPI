@@ -1,4 +1,4 @@
-package me.cg360.lib.stattrack;
+package org.madblock.lib.stattrack;
 
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
@@ -7,13 +7,12 @@ import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.plugin.PluginLogger;
 import cn.nukkit.scheduler.AsyncTask;
-import me.cg360.lib.stattrack.statistic.ITrackedEntityID;
-import me.cg360.lib.stattrack.statistic.StatisticCollection;
-import me.cg360.lib.stattrack.statistic.StatisticEntitiesList;
-import me.cg360.lib.stattrack.statistic.StatisticWatcher;
-import me.cg360.lib.stattrack.storage.IStorageProvider;
-import me.cg360.lib.stattrack.storage.database.MySQLProvider;
-import me.cg360.lib.stattrack.util.Util;
+import org.madblock.lib.stattrack.statistic.ITrackedEntityID;
+import org.madblock.lib.stattrack.statistic.StatisticCollection;
+import org.madblock.lib.stattrack.statistic.StatisticEntitiesList;
+import org.madblock.lib.stattrack.storage.IStorageProvider;
+import org.madblock.lib.stattrack.storage.database.MySQLProvider;
+import org.madblock.lib.stattrack.util.Util;
 
 import java.util.Optional;
 

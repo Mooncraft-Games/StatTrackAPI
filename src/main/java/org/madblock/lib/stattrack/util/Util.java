@@ -1,8 +1,8 @@
-package me.cg360.lib.stattrack.util;
+package org.madblock.lib.stattrack.util;
 
 import cn.nukkit.Player;
-import me.cg360.lib.stattrack.statistic.FinalEntityID;
-import me.cg360.lib.stattrack.statistic.ITrackedEntityID;
+import org.madblock.lib.stattrack.statistic.FinalEntityID;
+import org.madblock.lib.stattrack.statistic.ITrackedEntityID;
 
 public class Util {
 

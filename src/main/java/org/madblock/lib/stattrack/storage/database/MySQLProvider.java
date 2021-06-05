@@ -1,9 +1,9 @@
-package me.cg360.lib.stattrack.storage.database;
+package org.madblock.lib.stattrack.storage.database;
 
-import me.cg360.lib.stattrack.StatTrackAPI;
-import me.cg360.lib.stattrack.statistic.ITrackedEntityID;
-import me.cg360.lib.stattrack.storage.IStorageProvider;
-import me.cg360.lib.stattrack.util.Verify;
+import org.madblock.lib.stattrack.StatTrackAPI;
+import org.madblock.lib.stattrack.statistic.ITrackedEntityID;
+import org.madblock.lib.stattrack.storage.IStorageProvider;
+import org.madblock.lib.stattrack.util.Verify;
 import org.madblock.database.ConnectionWrapper;
 import org.madblock.database.DatabaseAPI;
 import org.madblock.database.DatabaseStatement;

@@ -1,6 +1,6 @@
-package me.cg360.lib.stattrack.storage;
+package org.madblock.lib.stattrack.storage;
 
-import me.cg360.lib.stattrack.statistic.ITrackedEntityID;
+import org.madblock.lib.stattrack.statistic.ITrackedEntityID;
 
 import java.util.HashMap;
 import java.util.Optional;

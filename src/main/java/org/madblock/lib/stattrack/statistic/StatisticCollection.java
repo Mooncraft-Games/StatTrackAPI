@@ -1,8 +1,8 @@
-package me.cg360.lib.stattrack.statistic;
+package org.madblock.lib.stattrack.statistic;
 
-import me.cg360.lib.stattrack.StatTrackAPI;
-import me.cg360.lib.stattrack.util.Check;
-import me.cg360.lib.stattrack.util.Verify;
+import org.madblock.lib.stattrack.StatTrackAPI;
+import org.madblock.lib.stattrack.util.Check;
+import org.madblock.lib.stattrack.util.Verify;
 
 import java.util.HashMap;
 import java.util.Map;

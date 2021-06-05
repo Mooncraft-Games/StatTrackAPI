@@ -1,6 +1,6 @@
-package me.cg360.lib.stattrack.util;
+package org.madblock.lib.stattrack.util;
 
-import me.cg360.lib.stattrack.exception.MissingPropertyException;
+import org.madblock.lib.stattrack.exception.MissingPropertyException;
 
 public class Check {
 

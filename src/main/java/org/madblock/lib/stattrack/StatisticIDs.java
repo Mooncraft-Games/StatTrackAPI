@@ -1,4 +1,4 @@
-package me.cg360.lib.stattrack;
+package org.madblock.lib.stattrack;
 
 /**
  * A list of statistic id's used within the

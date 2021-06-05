@@ -1,4 +1,4 @@
-package me.cg360.lib.stattrack.exception;
+package org.madblock.lib.stattrack.exception;
 
 /**
  * For use when a property is missing from a MapID

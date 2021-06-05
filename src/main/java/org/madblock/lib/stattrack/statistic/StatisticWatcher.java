@@ -1,6 +1,6 @@
-package me.cg360.lib.stattrack.statistic;
+package org.madblock.lib.stattrack.statistic;
 
-import me.cg360.lib.stattrack.StatTrackAPI;
+import org.madblock.lib.stattrack.StatTrackAPI;
 
 import java.util.Optional;
 

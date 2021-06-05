@@ -1,4 +1,4 @@
-package me.cg360.lib.stattrack.util;
+package org.madblock.lib.stattrack.util;
 
 public class Verify {
 
