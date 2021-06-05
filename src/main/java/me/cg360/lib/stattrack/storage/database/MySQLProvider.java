@@ -3,19 +3,21 @@ package me.cg360.lib.stattrack.storage.database;
 import me.cg360.lib.stattrack.StatTrackAPI;
 import me.cg360.lib.stattrack.statistic.ITrackedEntityID;
 import me.cg360.lib.stattrack.storage.IStorageProvider;
+import me.cg360.lib.stattrack.util.Verify;
 import net.mooncraftgames.mantle.database.ConnectionWrapper;
 import net.mooncraftgames.mantle.database.DatabaseAPI;
 import net.mooncraftgames.mantle.database.DatabaseStatement;
 import net.mooncraftgames.mantle.database.DatabaseUtility;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
 
 public class MySQLProvider implements IStorageProvider {
 
-    public static final String CREATE_STATS_TABLE = "CREATE TABLE IF NOT EXISTS stat_tracker ( target_type VARCHAR(8), target_id VARCHAR(48), stat_id VARCHAR(20), value INT, PRIMARY KEY (target_type, target_id));";
+    public static final String CREATE_STATS_TABLE = "CREATE TABLE IF NOT EXISTS stat_tracker (target_type VARCHAR(8), target_id VARCHAR(48), stat_id VARCHAR(20), value DOUBLE, PRIMARY KEY (target_type, target_id));";
     public static final String FETCH_BULK_REMOTE = "SELECT stat_id, value FROM stat_tracker WHERE target_type=? AND target_id=?;";
     public static final String FETCH_REMOTE = "SELECT value FROM stat_tracker WHERE target_type=? AND target_id=? AND stat_id=?;";
     public static final String PUSH_ABSOLUTE = "INSERT INTO stat_tracker (target_type, target_id, stat_id, value) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE value=?;";
@@ -30,7 +32,7 @@ public class MySQLProvider implements IStorageProvider {
         if(initImmediatley) this.init();
     }
 
-    public void init() {
+    public boolean init() {
         if(!isInitialized) {
             ConnectionWrapper wrapper = null;
             PreparedStatement stmt = null;
@@ -43,18 +45,41 @@ public class MySQLProvider implements IStorageProvider {
             } catch (SQLException exception) {
                 exception.printStackTrace();
                 StatTrackAPI.get().getLogger().error("Failed to add a statistics table on DB "+dataSourceName);
+                return false;
 
             } finally {
                 if (stmt != null) DatabaseUtility.closeQuietly(stmt);
                 if (wrapper != null) DatabaseUtility.closeQuietly(wrapper);
             }
         }
+        return true;
     }
 
     @Override
-    public Optional<Double> fetchRemoteValue(ITrackedEntityID entity, String statisticID) {
+    public Optional<Double> fetchRemoteValue(ITrackedEntityID entityID, String statisticID) {
         if(isInitialized) {
+            String statID = Verify.andCorrectStatisticID(statisticID);
 
+            ConnectionWrapper wrapper = null;
+            PreparedStatement stmt = null;
+            double value;
+            try {
+                wrapper = DatabaseAPI.getConnection(this.dataSourceName);
+                stmt = wrapper.prepareStatement(new DatabaseStatement(FETCH_REMOTE, new Object[]{ entityID.getEntityType(), entityID.getStoredID(), statID } ));
+                ResultSet results = stmt.executeQuery();
+                value = results.getDouble("value");
+                stmt.close();
+
+            } catch (SQLException exception) {
+                StatTrackAPI.get().getLogger().error(String.format("Failed to get statistic value for %s#%s: %s", entityID.getEntityType(), entityID.getStoredID(), statID));
+                exception.printStackTrace();
+                return Optional.empty();
+
+            } finally {
+                if (stmt != null) DatabaseUtility.closeQuietly(stmt);
+                if (wrapper != null) DatabaseUtility.closeQuietly(wrapper);
+            }
+            return Optional.of(value);
         }
         return Optional.empty();
     }
