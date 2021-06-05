@@ -1,5 +1,5 @@
 name: StatTrackAPI
-main: me.cg360.lib.stattrack.StatTrackAPI
+main: org.madblock.lib.stattrack.StatTrackAPI
 load: STARTUP
 version: "1.0.0"
 api: ["1.0.9"]
@@ -7,4 +7,4 @@ prefix: "mbgstats"
 
 author: "CG360 @ Madblock Games"
 description: "An api used to track player statistics"
-depend: [MooncraftDatabase]
+depend: [MadblockDatabase]
