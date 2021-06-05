@@ -75,13 +75,13 @@ public class MySQLProvider implements IStorageProvider {
 
             ConnectionWrapper wrapper = null;
             PreparedStatement stmt = null;
-            Double value = null;
+            double value;
 
             try {
                 wrapper = DatabaseAPI.getConnection(this.dataSourceName);
                 stmt = wrapper.prepareStatement(new DatabaseStatement(FETCH_REMOTE, new Object[]{ entityID.getEntityType(), entityID.getStoredID(), statID } ));
                 ResultSet results = stmt.executeQuery();
-                if(results.next()) value = results.getDouble(COLUMN_VALUE);
+                value = results.next() ? results.getDouble(COLUMN_VALUE) : 0;
                 stmt.close();
 
             } catch (SQLException exception) {
@@ -93,7 +93,7 @@ public class MySQLProvider implements IStorageProvider {
                 if (stmt != null) DatabaseUtility.closeQuietly(stmt);
                 if (wrapper != null) DatabaseUtility.closeQuietly(wrapper);
             }
-            return Optional.ofNullable(value);
+            return Optional.of(value);
         }
         return Optional.empty();
     }

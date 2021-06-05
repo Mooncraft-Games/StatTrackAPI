@@ -1,10 +1,12 @@
 package me.cg360.lib.stattrack.statistic;
 
+import me.cg360.lib.stattrack.StatTrackAPI;
 import me.cg360.lib.stattrack.util.Check;
 import me.cg360.lib.stattrack.util.Verify;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class StatisticCollection {
@@ -12,11 +14,26 @@ public class StatisticCollection {
     protected ITrackedEntityID target;
     protected HashMap<String, StatisticWatcher> statisticWatchers;
 
-    protected StatisticCollection(ITrackedEntityID target) {
+    protected StatisticCollection(ITrackedEntityID target, boolean fetchFromStorage) {
         Check.nullParam(target, "target");
 
         this.target = target;
         this.statisticWatchers = new HashMap<>();
+        if(fetchFromStorage) fetchStatisticsFromStorage();
+    }
+
+    public boolean fetchStatisticsFromStorage() {
+        Optional<HashMap<String, Double>> remoteStats = StatTrackAPI.get().getStorageProvider().fetchRemoteTrackedEntity(this.target);
+
+        if(remoteStats.isPresent()) {
+            HashMap<String, Double> stats = remoteStats.get();
+
+            for(Map.Entry<String, Double> s: stats.entrySet()) {
+                createStatistic(s.getKey()).addFetchedRemoteBulkEntry(s.getValue());
+            }
+            return true;
+        }
+        return false;
     }
 
     /**

@@ -24,14 +24,18 @@ public class StatisticWatcher {
         this.hasFetched = false;
     }
 
+    // Used by StatisticCollection
+    protected void addFetchedRemoteBulkEntry(double remoteValue) {
+        this.hasFetched = true;
+        this.valueRemote = remoteValue;
+    }
 
 
     public boolean fetchRemote() {
         Optional<Double> val = StatTrackAPI.get().getStorageProvider().fetchRemoteValue(this.target, this.statisticID);
 
         if(val.isPresent()) {
-            this.hasFetched = true;
-            this.valueRemote = val.get();
+            this.addFetchedRemoteBulkEntry(val.get());
             return true;
         }
         return false;
