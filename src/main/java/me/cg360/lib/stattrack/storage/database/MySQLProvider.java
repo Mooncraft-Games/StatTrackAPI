@@ -17,11 +17,23 @@ import java.util.Optional;
 
 public class MySQLProvider implements IStorageProvider {
 
-    public static final String CREATE_STATS_TABLE = "CREATE TABLE IF NOT EXISTS stat_tracker (target_type VARCHAR(8), target_id VARCHAR(48), stat_id VARCHAR(20), value DOUBLE, PRIMARY KEY (target_type, target_id));";
-    public static final String FETCH_BULK_REMOTE = "SELECT stat_id, value FROM stat_tracker WHERE target_type=? AND target_id=?;";
-    public static final String FETCH_REMOTE = "SELECT value FROM stat_tracker WHERE target_type=? AND target_id=? AND stat_id=?;";
-    public static final String PUSH_ABSOLUTE = "INSERT INTO stat_tracker (target_type, target_id, stat_id, value) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE value=?;";
-    public static final String PUSH_DELTA = "INSERT INTO stat_tracker (target_type, target_id, stat_id, value) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE value = value + ?;";
+    public static final String TABLE_NAME = "stat_tracker";
+    public static final String COLUMN_TARGET_TYPE = "target_type";
+    public static final String COLUMN_TARGET_ID = "target_id";
+    public static final String COLUMN_STAT_ID = "stat_id";
+    public static final String COLUMN_VALUE = "value";
+
+
+    public static final String CREATE_STATS_TABLE = String.format("CREATE TABLE IF NOT EXISTS %s (%s VARCHAR(8), %s VARCHAR(48), %s VARCHAR(20), %s DOUBLE, PRIMARY KEY (%s, %s));",
+            TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID, COLUMN_VALUE, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID);
+    public static final String FETCH_BULK_REMOTE = String.format("SELECT %s, %s FROM %s WHERE %s=? AND %s=?;",
+            COLUMN_STAT_ID, COLUMN_VALUE, TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID);
+    public static final String FETCH_REMOTE = String.format("SELECT %s FROM %s WHERE %s=? AND %s=? AND %s=?;",
+            COLUMN_VALUE, TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID);
+    public static final String PUSH_ABSOLUTE = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE %s=?;",
+            TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID, COLUMN_VALUE, COLUMN_VALUE);
+    public static final String PUSH_DELTA = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE %s = %s + ?;",
+            TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID, COLUMN_VALUE, COLUMN_VALUE, COLUMN_VALUE);
 
     protected String dataSourceName;
     protected boolean isInitialized;
@@ -62,12 +74,12 @@ public class MySQLProvider implements IStorageProvider {
 
             ConnectionWrapper wrapper = null;
             PreparedStatement stmt = null;
-            double value;
+            Double value = null;
             try {
                 wrapper = DatabaseAPI.getConnection(this.dataSourceName);
                 stmt = wrapper.prepareStatement(new DatabaseStatement(FETCH_REMOTE, new Object[]{ entityID.getEntityType(), entityID.getStoredID(), statID } ));
                 ResultSet results = stmt.executeQuery();
-                value = results.getDouble("value");
+                if(results.next()) value = results.getDouble(COLUMN_VALUE);
                 stmt.close();
 
             } catch (SQLException exception) {
@@ -79,13 +91,13 @@ public class MySQLProvider implements IStorageProvider {
                 if (stmt != null) DatabaseUtility.closeQuietly(stmt);
                 if (wrapper != null) DatabaseUtility.closeQuietly(wrapper);
             }
-            return Optional.of(value);
+            return Optional.ofNullable(value);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<HashMap<String, Double>> fetchRemoteTrackedEntity(ITrackedEntityID entity) {
+    public Optional<HashMap<String, Double>> fetchRemoteTrackedEntity(ITrackedEntityID entityID) {
         if(isInitialized) {
 
         }
