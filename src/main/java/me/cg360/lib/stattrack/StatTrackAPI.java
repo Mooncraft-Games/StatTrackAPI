@@ -15,7 +15,7 @@ public class StatTrackAPI extends PluginBase {
 
         try {
             plugin = this;
-            this.storageProvider = new MySQLProvider("MAIN");
+            this.storageProvider = new MySQLProvider("MAIN", true);
 
         } catch (Exception err) {
             plugin = null;
