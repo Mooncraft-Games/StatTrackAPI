@@ -74,4 +74,8 @@ public class StatisticCollection {
     public ITrackedEntityID getTarget() {
         return target;
     }
+
+    public String[] getStatisticRecordIDs() {
+        return this.statisticWatchers.keySet().toArray(new String[0]);
+    }
 }

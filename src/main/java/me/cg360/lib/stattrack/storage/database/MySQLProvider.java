@@ -24,7 +24,7 @@ public class MySQLProvider implements IStorageProvider {
     public static final String COLUMN_VALUE = "value";
 
 
-    public static final String CREATE_STATS_TABLE = String.format("CREATE TABLE IF NOT EXISTS %s (%s VARCHAR(8), %s VARCHAR(48), %s VARCHAR(20), %s DOUBLE, PRIMARY KEY (%s, %s));",
+    public static final String CREATE_STATS_TABLE = String.format("CREATE TABLE IF NOT EXISTS %s (%s VARCHAR(10), %s VARCHAR(48), %s VARCHAR(20), %s DOUBLE, PRIMARY KEY (%s, %s));",
             TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID, COLUMN_VALUE, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID);
     public static final String FETCH_BULK_REMOTE = String.format("SELECT %s, %s FROM %s WHERE %s=? AND %s=?;",
             COLUMN_STAT_ID, COLUMN_VALUE, TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID);
