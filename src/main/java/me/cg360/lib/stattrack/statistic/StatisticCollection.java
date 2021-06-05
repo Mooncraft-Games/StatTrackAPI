@@ -36,6 +36,15 @@ public class StatisticCollection {
         return false;
     }
 
+    /** @return the amount of failed pushes. */
+    public int pushStatisticsToStorage() {
+        int failedPushes = 0;
+        for(StatisticWatcher watcher: new HashMap<>(statisticWatchers).values()) {
+            failedPushes += watcher.pushRemote() ? 0 : 1;
+        }
+        return failedPushes;
+    }
+
     /**
      * Creates a statistic watcher if one doesn't already exist for
      * this collection.
