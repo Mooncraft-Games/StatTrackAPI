@@ -48,6 +48,7 @@ public class MySQLProvider implements IStorageProvider {
         if(!isInitialized) {
             ConnectionWrapper wrapper = null;
             PreparedStatement stmt = null;
+
             try {
                 wrapper = DatabaseAPI.getConnection(this.dataSourceName);
                 stmt = wrapper.prepareStatement(new DatabaseStatement(CREATE_STATS_TABLE));
@@ -75,6 +76,7 @@ public class MySQLProvider implements IStorageProvider {
             ConnectionWrapper wrapper = null;
             PreparedStatement stmt = null;
             Double value = null;
+
             try {
                 wrapper = DatabaseAPI.getConnection(this.dataSourceName);
                 stmt = wrapper.prepareStatement(new DatabaseStatement(FETCH_REMOTE, new Object[]{ entityID.getEntityType(), entityID.getStoredID(), statID } ));
@@ -99,7 +101,42 @@ public class MySQLProvider implements IStorageProvider {
     @Override
     public Optional<HashMap<String, Double>> fetchRemoteTrackedEntity(ITrackedEntityID entityID) {
         if(isInitialized) {
+            ConnectionWrapper wrapper = null;
+            PreparedStatement stmt = null;
 
+            boolean error = false;
+            int duplicates = 0;
+            HashMap<String, Double> data = new HashMap<>();
+
+            try {
+                wrapper = DatabaseAPI.getConnection(this.dataSourceName);
+                stmt = wrapper.prepareStatement(new DatabaseStatement(FETCH_BULK_REMOTE, new Object[]{ entityID.getEntityType(), entityID.getStoredID()} ));
+                ResultSet results = stmt.executeQuery();
+
+                while (results.next()) {
+                    try {
+                        // Could correct invalid/duplicate data here? Ensure the stat keys are correct at least
+                        String statKey = Verify.andCorrectStatisticID(results.getString(COLUMN_STAT_ID));
+                        double value = results.getDouble(COLUMN_VALUE);
+                        duplicates += (data.put(statKey, value) == null ? 0 : 1);
+                    } catch (Exception somewhatIgnored) { error = true; }
+                }
+                stmt.close();
+
+            } catch (SQLException exception) {
+                StatTrackAPI.get().getLogger().error(String.format("Failed to get entity statistics for %s#%s", entityID.getEntityType(), entityID.getStoredID()));
+                exception.printStackTrace();
+                return Optional.empty();
+
+            } finally {
+                if (stmt != null) DatabaseUtility.closeQuietly(stmt);
+                if (wrapper != null) DatabaseUtility.closeQuietly(wrapper);
+            }
+
+            if(error) StatTrackAPI.get().getLogger().warning(String.format("Error encountered while gathering stats for %s#%s. Results may be incomplete.", entityID.getEntityType(), entityID.getStoredID()));
+            if(duplicates > 0) StatTrackAPI.get().getLogger().warning(String.format("Duplicate statistic keys found while gathering stats for %s#%s.", entityID.getEntityType(), entityID.getStoredID()));
+
+            return Optional.of(data);
         }
         return Optional.empty();
     }
@@ -121,6 +158,7 @@ public class MySQLProvider implements IStorageProvider {
             ConnectionWrapper wrapper = null;
             PreparedStatement stmt = null;
             int code;
+
             try {
                 wrapper = DatabaseAPI.getConnection(this.dataSourceName);
                 stmt = wrapper.prepareStatement(new DatabaseStatement(isDelta ? PUSH_DELTA : PUSH_ABSOLUTE, new Object[]{ entityID.getEntityType(), entityID.getStoredID(), statID, value, value } ));
