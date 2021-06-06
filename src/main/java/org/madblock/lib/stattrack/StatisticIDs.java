@@ -9,4 +9,7 @@ public class StatisticIDs {
 
     public static final String NETWORK_PLAYER_JOIN = "network.joins";
 
+    public static final String SERVER_VERSION_JOINS_PREFIX = "server.client_ver.";
+    public static final String SERVER_PLATFORM_JOINS_PREFIX = "server.client_platform.";
+
 }

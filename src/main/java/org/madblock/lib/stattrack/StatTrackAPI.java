@@ -25,7 +25,8 @@ public class StatTrackAPI extends PluginBase implements Listener {
 
     // TODO: Config options
     protected boolean config_handlePlayerStatistics = true;
-    protected boolean config_countPlayerJoins = true; // requires above ^
+    protected boolean config_handleServerStatistics = true;
+    protected boolean config_countPlayerJoins = true; // requires above player stats ^
     protected int config_updateTicks = 4000;
 
     @Override
@@ -83,6 +84,16 @@ public class StatTrackAPI extends PluginBase implements Listener {
                 }
 
             });
+        }
+
+        if(config_handleServerStatistics) {
+            ITrackedEntityID id = Util.getServerEntityID();
+            StatisticCollection collection = StatisticEntitiesList.get().createCollection(id);
+
+            String clientVersion = event.getPlayer().getLoginChainData().getGameVersion();
+            clientVersion = ((clientVersion == null) || clientVersion.length() == 0) ? "unknown" : clientVersion;
+
+            collection.createStatistic(StatisticIDs.SERVER_VERSION_JOINS_PREFIX + clientVersion);
         }
     }
 
