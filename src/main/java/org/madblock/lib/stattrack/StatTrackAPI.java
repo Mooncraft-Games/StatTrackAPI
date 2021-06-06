@@ -93,7 +93,10 @@ public class StatTrackAPI extends PluginBase implements Listener {
             String clientVersion = event.getPlayer().getLoginChainData().getGameVersion();
             clientVersion = ((clientVersion == null) || clientVersion.length() == 0) ? "unknown" : clientVersion;
 
+            String clientOS = Util.getOSFriendlyName(event.getPlayer().getLoginChainData().getDeviceOS());
+
             collection.createStatistic(StatisticIDs.SERVER_VERSION_JOINS_PREFIX + clientVersion);
+            collection.createStatistic(StatisticIDs.SERVER_PLATFORM_JOINS_PREFIX + clientOS);
         }
     }
 
