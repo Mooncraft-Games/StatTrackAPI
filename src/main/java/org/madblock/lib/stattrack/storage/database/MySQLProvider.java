@@ -30,10 +30,10 @@ public class MySQLProvider implements IStorageProvider {
             COLUMN_STAT_ID, COLUMN_VALUE, TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID);
     public static final String FETCH_REMOTE = String.format("SELECT %s FROM %s WHERE %s=? AND %s=? AND %s=?;",
             COLUMN_VALUE, TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID);
-    public static final String PUSH_ABSOLUTE = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE %s=?;",
-            TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID, COLUMN_VALUE, COLUMN_VALUE);
-    public static final String PUSH_DELTA = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE %s = %s + ?;",
-            TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID, COLUMN_VALUE, COLUMN_VALUE, COLUMN_VALUE);
+    public static final String PUSH_ABSOLUTE = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE %s=? WHERE %s=? AND %s=? AND %s=?;",
+            TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID, COLUMN_VALUE, COLUMN_VALUE, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID);
+    public static final String PUSH_DELTA = String.format("INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE %s = %s + ? WHERE %s=? AND %s=? AND %s=?;",
+            TABLE_NAME, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID, COLUMN_VALUE, COLUMN_VALUE, COLUMN_VALUE, COLUMN_TARGET_TYPE, COLUMN_TARGET_ID, COLUMN_STAT_ID);
 
     protected String dataSourceName;
     protected boolean isInitialized;
@@ -161,7 +161,7 @@ public class MySQLProvider implements IStorageProvider {
 
             try {
                 wrapper = DatabaseAPI.getConnection(this.dataSourceName);
-                stmt = wrapper.prepareStatement(new DatabaseStatement(isDelta ? PUSH_DELTA : PUSH_ABSOLUTE, new Object[]{ entityID.getEntityType(), entityID.getStoredID(), statID, value, value } ));
+                stmt = wrapper.prepareStatement(new DatabaseStatement(isDelta ? PUSH_DELTA : PUSH_ABSOLUTE, new Object[]{ entityID.getEntityType(), entityID.getStoredID(), statID, value, value, entityID.getEntityType(), entityID.getStoredID(), statID } ));
                 code = stmt.executeUpdate();
                 stmt.close();
 
