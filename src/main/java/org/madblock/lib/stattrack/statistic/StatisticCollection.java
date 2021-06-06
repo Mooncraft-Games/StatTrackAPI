@@ -36,7 +36,8 @@ public class StatisticCollection {
     }
 
     /** @return the amount of failed pushes. */
-    public int pushStatisticsToStorage() {
+    public int pushStatisticsToStorage() { return pushStatisticsToStorage(false); }
+    public int pushStatisticsToStorage(boolean isAutoSave) {
         int failedPushes = 0;
         HashMap<String, StatisticWatcher> source;
 
@@ -53,13 +54,18 @@ public class StatisticCollection {
      * @return a new StatisticWatcher if not present, else the currently present StatisticWatcher
      */
     public synchronized StatisticWatcher createStatistic(String id) {
+        return createStatistic(id, true);
+    }
+    public synchronized StatisticWatcher createStatistic(String id, boolean enableAutoSave) {
         String fID = Verify.andCorrectStatisticID(id);
 
         if (statisticWatchers.containsKey(fID)) {
-            return statisticWatchers.get(fID);
+            StatisticWatcher s = statisticWatchers.get(fID);
+            s.isAutoSaveEnabled = enableAutoSave;
+            return s;
 
         } else {
-            StatisticWatcher watcher = new StatisticWatcher(target, fID);
+            StatisticWatcher watcher = new StatisticWatcher(target, fID, enableAutoSave);
             this.statisticWatchers.put(fID, watcher);
             return watcher;
         }

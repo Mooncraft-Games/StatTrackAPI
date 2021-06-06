@@ -10,17 +10,19 @@ public class StatisticWatcher {
     protected String statisticID;
     protected double valueRemote; // Tracks the storage value of the statistic.
     protected double valueDelta; // Tracks the amount increased/decreased on the server. Resets whenever changes are pushed to the storage provider.
+    protected boolean isAutoSaveEnabled;
 
     // Needs at least 1 successful fetch from storage to be true (Or no records present in storage)
     // Once true, it shouldn't be changed.
     protected boolean hasFetched;
 
-    protected StatisticWatcher(ITrackedEntityID target, String statisticID) {
+    protected StatisticWatcher(ITrackedEntityID target, String statisticID, boolean isAutoSaveEnabled) {
         this.target = target;
         this.statisticID = statisticID;
         this.valueRemote = 0;
         this.valueDelta = 0;
 
+        this.isAutoSaveEnabled = isAutoSaveEnabled;
         this.hasFetched = false;
     }
 

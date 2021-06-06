@@ -43,7 +43,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
                 StatisticCollection[] stats = statisticEntitiesList.getStatisticEntities();
 
                 for(StatisticCollection s: stats) {
-                    s.pushStatisticsToStorage();
+                    s.pushStatisticsToStorage(true);
                     s.fetchStatisticsFromStorage();
                 }
 
