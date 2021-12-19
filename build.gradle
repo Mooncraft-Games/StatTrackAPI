@@ -27,20 +27,25 @@ jar {
     }
 }
 
+configurations {
+    implementation.extendsFrom externalLib
+    include.extendsFrom externalLib
+}
+
 dependencies {
     if(isMadBlockCollection) {
-        compile 'com.nukkitx:nbt:2.0.1'
-        compile group: 'commons-io', name: 'commons-io', version: '2.6'
+        externalLib 'com.nukkitx:nbt:2.0.1'
+        externalLib group: 'commons-io', name: 'commons-io', version: '2.6'
         implementation project(":Tool:Database")
 
     } else {
         implementation 'cn.nukkit:nukkit:1.0-SNAPSHOT'
-        compile 'com.nukkitx:nbt:2.0.1'
+        externalLib 'com.nukkitx:nbt:2.0.1'
 
-        compile group: 'commons-io', name: 'commons-io', version: '2.6'
+        externalLib group: 'commons-io', name: 'commons-io', version: '2.6'
 
         // Include MadBlockDatabase. Might be replaced in a future version.
-        compile fileTree(dir: 'libs/compile', include: '*.jar')
+        externalLib fileTree(dir: 'libs/compile', include: '*.jar')
         implementation fileTree(dir: 'libs/runtime', include: '*.jar')
     }
 }
