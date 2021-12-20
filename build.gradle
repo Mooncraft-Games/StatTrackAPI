@@ -1,11 +1,9 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow'
 }
 
 boolean isMadBlockCollection = rootProject != project
-if(isMadBlockCollection) {
-    apply plugin: 'com.github.johnrengelman.shadow'
-}
 
 group 'org.madblock.lib'
 version '1.0'
@@ -26,25 +24,20 @@ repositories {
     }
 }
 
-configurations {
-    implementation.extendsFrom externalLib
-    include.extendsFrom externalLib
-}
-
 dependencies {
     if(isMadBlockCollection) {
-        externalLib 'com.nukkitx:nbt:2.0.1'
-        externalLib group: 'commons-io', name: 'commons-io', version: '2.6'
+        shadow 'com.nukkitx:nbt:2.0.1'
+        shadow group: 'commons-io', name: 'commons-io', version: '2.6'
         implementation project(":Tool:Database")
 
     } else {
         implementation 'cn.nukkit:nukkit:1.0-SNAPSHOT'
-        externalLib 'com.nukkitx:nbt:2.0.1'
+        shadow 'com.nukkitx:nbt:2.0.1'
 
-        externalLib group: 'commons-io', name: 'commons-io', version: '2.6'
+        shadow group: 'commons-io', name: 'commons-io', version: '2.6'
 
         // Include MadBlockDatabase. Might be replaced in a future version.
-        externalLib fileTree(dir: 'libs/compile', include: '*.jar')
+        shadow fileTree(dir: 'libs/compile', include: '*.jar')
         implementation fileTree(dir: 'libs/runtime', include: '*.jar')
     }
 }
