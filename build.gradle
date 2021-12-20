@@ -2,11 +2,16 @@ plugins {
     id 'java'
 }
 
+boolean isMadBlockCollection = rootProject != project
+if(isMadBlockCollection) {
+    apply plugin: 'com.github.johnrengelman.shadow'
+}
+
 group 'org.madblock.lib'
 version '1.0'
 
 sourceCompatibility = 1.8
-boolean isMadBlockCollection = rootProject != project
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -18,12 +23,6 @@ repositories {
     }
     maven {
         url = 'https://repo.opencollab.dev/maven-snapshots/'
-    }
-}
-
-jar {
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
