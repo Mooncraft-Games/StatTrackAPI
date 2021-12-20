@@ -26,18 +26,18 @@ repositories {
 
 dependencies {
     if(isMadBlockCollection) {
-        shadow 'com.nukkitx:nbt:2.0.1'
-        shadow group: 'commons-io', name: 'commons-io', version: '2.6'
-        implementation project(":Tool:Database")
+        implementation 'com.nukkitx:nbt:2.0.1'
+        implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+        shadow project(":Tool:Database")
 
     } else {
-        implementation 'cn.nukkit:nukkit:1.0-SNAPSHOT'
-        shadow 'com.nukkitx:nbt:2.0.1'
+        shadow 'cn.nukkit:nukkit:1.0-SNAPSHOT'
+        implementation 'com.nukkitx:nbt:2.0.1'
 
-        shadow group: 'commons-io', name: 'commons-io', version: '2.6'
+        implementation group: 'commons-io', name: 'commons-io', version: '2.6'
 
         // Include MadBlockDatabase. Might be replaced in a future version.
-        shadow fileTree(dir: 'libs/compile', include: '*.jar')
-        implementation fileTree(dir: 'libs/runtime', include: '*.jar')
+        implementation fileTree(dir: 'libs/compile', include: '*.jar')
+        shadow fileTree(dir: 'libs/runtime', include: '*.jar')
     }
 }
