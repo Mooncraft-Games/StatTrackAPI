@@ -35,7 +35,7 @@ repositories {
 dependencies {
     if(isMadBlockCollection) {
         implementation 'com.nukkitx:nbt:2.0.1'
-        implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+        shadow project(path: ":Library:QuirkCommons", configuration: 'shadow')
         shadow project(":Tool:Database")
 
     } else {
@@ -45,7 +45,7 @@ dependencies {
         implementation group: 'commons-io', name: 'commons-io', version: '2.6'
 
         // Include MadBlockDatabase. Might be replaced in a future version.
-        implementation fileTree(dir: 'libs/compile', include: '*.jar')
+        implementation fileTree(dir: 'libs/included', include: '*.jar')
         shadow fileTree(dir: 'libs/runtime', include: '*.jar')
     }
 }
