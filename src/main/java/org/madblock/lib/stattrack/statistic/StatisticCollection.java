@@ -1,7 +1,8 @@
 package org.madblock.lib.stattrack.statistic;
 
+import org.madblock.lib.commons.style.Check;
 import org.madblock.lib.stattrack.StatTrackAPI;
-import org.madblock.lib.stattrack.util.Check;
+import org.madblock.lib.stattrack.statistic.id.ITrackedHolderID;
 import org.madblock.lib.stattrack.util.Verify;
 
 import java.util.HashMap;
@@ -10,10 +11,10 @@ import java.util.Optional;
 
 public class StatisticCollection {
 
-    protected ITrackedEntityID target;
+    protected ITrackedHolderID target;
     protected final HashMap<String, StatisticWatcher> statisticWatchers;
 
-    protected StatisticCollection(ITrackedEntityID target, boolean fetchFromStorage) {
+    protected StatisticCollection(ITrackedHolderID target, boolean fetchFromStorage) {
         Check.nullParam(target, "target");
 
         this.target = target;
@@ -78,7 +79,7 @@ public class StatisticCollection {
     }
 
     /** @return the entity associated with the listed StatisticWatcher instances. */
-    public ITrackedEntityID getTarget() {
+    public ITrackedHolderID getTarget() {
         return target;
     }
 

@@ -1,4 +1,4 @@
-package org.madblock.lib.stattrack.statistic;
+package org.madblock.lib.stattrack.statistic.id;
 
 
 /**
@@ -8,10 +8,8 @@ package org.madblock.lib.stattrack.statistic;
  * "Entity" in this case does not force it to be equivalent to a
  * Minecraft Entity.
  */
-public interface ITrackedEntityID {
+public interface ITrackedHolderID {
 
-    String BEDROCK_NO_AUTH_PLAYER_TYPE = "playerBE";
-    String BEDROCK_AUTH_PLAYER_TYPE = "xuid";
     String SERVER_TYPE = "server"; // ip@port
 
     String getEntityType();

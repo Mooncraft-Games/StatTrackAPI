@@ -1,14 +1,16 @@
 package org.madblock.lib.stattrack.statistic;
 
+import org.madblock.lib.stattrack.statistic.id.ITrackedHolderID;
+
 import java.util.HashMap;
 import java.util.Optional;
 
-public class StatisticEntitiesList {
+public class StatisticHolderList {
 
-    protected static StatisticEntitiesList entityList;
+    protected static StatisticHolderList entityList;
     protected final HashMap<String, StatisticCollection> statisticEntities;
 
-    public StatisticEntitiesList() {
+    public StatisticHolderList() {
         this.statisticEntities = new HashMap<>();
     }
 
@@ -22,17 +24,17 @@ public class StatisticEntitiesList {
     }
 
 
-    protected String genEntityID(ITrackedEntityID entityID) {
+    protected String genEntityID(ITrackedHolderID entityID) {
         return entityID.getEntityType().toLowerCase() + "#" +entityID.getStoredID();
     }
 
 
     // Don't block.
-    public StatisticCollection createCollection(ITrackedEntityID entityID) {
+    public StatisticCollection createCollection(ITrackedHolderID entityID) {
         return createCollection(entityID, false);
     }
 
-    public StatisticCollection createCollection(ITrackedEntityID entityID, boolean fetchIfNotLoaded) {
+    public StatisticCollection createCollection(ITrackedHolderID entityID, boolean fetchIfNotLoaded) {
         String fID = genEntityID(entityID);
         StatisticCollection collection;
 
@@ -52,7 +54,7 @@ public class StatisticEntitiesList {
 
 
 
-    public synchronized Optional<StatisticCollection> getCollection(ITrackedEntityID entityID) {
+    public synchronized Optional<StatisticCollection> getCollection(ITrackedHolderID entityID) {
         String fID = genEntityID(entityID);
         return Optional.ofNullable(statisticEntities.get(fID));
     }
@@ -62,7 +64,7 @@ public class StatisticEntitiesList {
         return statisticEntities.values().toArray(new StatisticCollection[0]);
     }
 
-    public static StatisticEntitiesList get() {
+    public static StatisticHolderList get() {
         return entityList;
     }
 }

@@ -1,7 +1,7 @@
 package org.madblock.lib.stattrack.storage.database;
 
 import org.madblock.lib.stattrack.StatTrackAPI;
-import org.madblock.lib.stattrack.statistic.ITrackedEntityID;
+import org.madblock.lib.stattrack.statistic.id.ITrackedHolderID;
 import org.madblock.lib.stattrack.storage.IStorageProvider;
 import org.madblock.lib.stattrack.util.Verify;
 import org.madblock.database.ConnectionWrapper;
@@ -69,7 +69,7 @@ public class MySQLProvider implements IStorageProvider {
     }
 
     @Override
-    public Optional<Double> fetchRemoteValue(ITrackedEntityID entityID, String statisticID) {
+    public Optional<Double> fetchRemoteValue(ITrackedHolderID entityID, String statisticID) {
         if(isInitialized) {
             String statID = Verify.andCorrectStatisticID(statisticID);
 
@@ -99,7 +99,7 @@ public class MySQLProvider implements IStorageProvider {
     }
 
     @Override
-    public Optional<HashMap<String, Double>> fetchRemoteTrackedEntity(ITrackedEntityID entityID) {
+    public Optional<HashMap<String, Double>> fetchRemoteTrackedEntity(ITrackedHolderID entityID) {
         if(isInitialized) {
             ConnectionWrapper wrapper = null;
             PreparedStatement stmt = null;
@@ -142,16 +142,16 @@ public class MySQLProvider implements IStorageProvider {
     }
 
     @Override
-    public boolean pushRemoteTotalValue(ITrackedEntityID entityID, String statisticID, double total) {
+    public boolean pushRemoteTotalValue(ITrackedHolderID entityID, String statisticID, double total) {
         return pushValue(entityID, statisticID, total, false);
     }
 
     @Override
-    public boolean pushRemoteDeltaValue(ITrackedEntityID entityID, String statisticID, double delta) {
+    public boolean pushRemoteDeltaValue(ITrackedHolderID entityID, String statisticID, double delta) {
         return pushValue(entityID, statisticID, delta, true);
     }
 
-    protected boolean pushValue(ITrackedEntityID entityID, String statisticID, double value, boolean isDelta) {
+    protected boolean pushValue(ITrackedHolderID entityID, String statisticID, double value, boolean isDelta) {
         if(isInitialized) {
             String statID = Verify.andCorrectStatisticID(statisticID);
 

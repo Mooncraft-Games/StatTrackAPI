@@ -7,9 +7,11 @@ import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.plugin.PluginLogger;
 import cn.nukkit.scheduler.AsyncTask;
-import org.madblock.lib.stattrack.statistic.ITrackedEntityID;
+import org.madblock.lib.stattrack.statistic.id.ITrackedHolderID;
 import org.madblock.lib.stattrack.statistic.StatisticCollection;
-import org.madblock.lib.stattrack.statistic.StatisticEntitiesList;
+import org.madblock.lib.stattrack.statistic.StatisticHolderList;
+import org.madblock.lib.stattrack.statistic.id.server.PlayerWrapperID;
+import org.madblock.lib.stattrack.statistic.id.server.ServerWrapperID;
 import org.madblock.lib.stattrack.storage.IStorageProvider;
 import org.madblock.lib.stattrack.storage.database.MySQLProvider;
 import org.madblock.lib.stattrack.util.Util;
@@ -20,7 +22,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
 
     private static StatTrackAPI plugin = null;
 
-    protected StatisticEntitiesList statisticEntitiesList;
+    protected StatisticHolderList statisticEntitiesList;
     protected IStorageProvider storageProvider; // Configurable storage sources. Uses MySQL right now.
 
     // TODO: Config options
@@ -34,7 +36,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
 
         try {
             plugin = this;
-            this.statisticEntitiesList = new StatisticEntitiesList();
+            this.statisticEntitiesList = new StatisticHolderList();
             this.storageProvider = new MySQLProvider("MAIN", true);
 
             this.statisticEntitiesList.setAsPrimaryList();
@@ -69,14 +71,14 @@ public class StatTrackAPI extends PluginBase implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         if(config_handlePlayerStatistics) {
-            ITrackedEntityID id = Util.getPlayerEntityID(event.getPlayer());
-            StatisticCollection collection = StatisticEntitiesList.get().createCollection(id);
+            ITrackedHolderID id = new PlayerWrapperID(event.getPlayer());
+            StatisticCollection collection = StatisticHolderList.get().createCollection(id);
             this.getServer().getScheduler().scheduleAsyncTask(this, new AsyncTask() {
 
                 @Override
                 public void onRun() {
                     if(!collection.fetchStatisticsFromStorage()) {
-                        getSyncLogger().warning(String.format("Failed to fetch player %s's stat records.", Util.getPlayerEntityID(event.getPlayer())));
+                        getSyncLogger().warning(String.format("Failed to fetch player %s's stat records.", id));
 
                     } else if(config_countPlayerJoins) {
                         collection.createStatistic(StatisticIDs.NETWORK_PLAYER_JOIN).increment();
@@ -87,8 +89,8 @@ public class StatTrackAPI extends PluginBase implements Listener {
         }
 
         if(config_handleServerStatistics) {
-            ITrackedEntityID id = Util.getServerEntityID();
-            StatisticCollection collection = StatisticEntitiesList.get().createCollection(id);
+            ITrackedHolderID id = new ServerWrapperID();
+            StatisticCollection collection = StatisticHolderList.get().createCollection(id);
 
             String clientVersion = event.getPlayer().getLoginChainData().getGameVersion();
             clientVersion = ((clientVersion == null) || clientVersion.length() == 0) ? "unknown" : clientVersion;
@@ -103,8 +105,8 @@ public class StatTrackAPI extends PluginBase implements Listener {
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
         if(config_handlePlayerStatistics) {
-            ITrackedEntityID id = Util.getPlayerEntityID(event.getPlayer());
-            Optional<StatisticCollection> check = StatisticEntitiesList.get().getCollection(id);
+            ITrackedHolderID id = new PlayerWrapperID(event.getPlayer());
+            Optional<StatisticCollection> check = StatisticHolderList.get().getCollection(id);
 
             if(check.isPresent()) {
                 StatisticCollection collection = check.get();
@@ -115,8 +117,8 @@ public class StatTrackAPI extends PluginBase implements Listener {
                         int fails = collection.pushStatisticsToStorage();
                         if(fails > 0) {
                             getSyncLogger().warning(String.format("Push to storage missed %s/%s of player %s's stat records.",
-                                    fails, collection.getStatisticRecordIDs().length, Util.getPlayerEntityID(event.getPlayer())
-                            ));
+                                    fails, collection.getStatisticRecordIDs().length, id)
+                            );
                         }
                     }
 
@@ -126,7 +128,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
     }
 
     public IStorageProvider getStorageProvider() { return storageProvider; }
-    public StatisticEntitiesList getStatisticEntitiesList() { return statisticEntitiesList; }
+    public StatisticHolderList getStatisticEntitiesList() { return statisticEntitiesList; }
 
     public static StatTrackAPI get() { return plugin; }
     public static synchronized PluginLogger getSyncLogger() { return plugin.getLogger(); }

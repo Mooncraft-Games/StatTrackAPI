@@ -1,12 +1,13 @@
 package org.madblock.lib.stattrack.statistic;
 
 import org.madblock.lib.stattrack.StatTrackAPI;
+import org.madblock.lib.stattrack.statistic.id.ITrackedHolderID;
 
 import java.util.Optional;
 
 public class StatisticWatcher {
 
-    protected ITrackedEntityID target;
+    protected ITrackedHolderID target;
     protected String statisticID;
     protected double valueRemote; // Tracks the storage value of the statistic.
     protected double valueDelta; // Tracks the amount increased/decreased on the server. Resets whenever changes are pushed to the storage provider.
@@ -16,7 +17,7 @@ public class StatisticWatcher {
     // Once true, it shouldn't be changed.
     protected boolean hasFetched;
 
-    protected StatisticWatcher(ITrackedEntityID target, String statisticID, boolean isAutoSaveEnabled) {
+    protected StatisticWatcher(ITrackedHolderID target, String statisticID, boolean isAutoSaveEnabled) {
         this.target = target;
         this.statisticID = statisticID;
         this.valueRemote = 0;
