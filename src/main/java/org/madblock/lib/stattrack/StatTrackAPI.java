@@ -7,6 +7,7 @@ import cn.nukkit.event.player.PlayerQuitEvent;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.plugin.PluginLogger;
 import cn.nukkit.scheduler.AsyncTask;
+import org.madblock.lib.commons.data.store.settings.ControlledSettings;
 import org.madblock.lib.stattrack.statistic.id.ITrackedHolderID;
 import org.madblock.lib.stattrack.statistic.StatisticCollection;
 import org.madblock.lib.stattrack.statistic.StatisticHolderList;
@@ -16,6 +17,7 @@ import org.madblock.lib.stattrack.storage.IStorageProvider;
 import org.madblock.lib.stattrack.storage.database.MySQLProvider;
 import org.madblock.lib.stattrack.util.Util;
 
+import java.io.File;
 import java.util.Optional;
 
 public class StatTrackAPI extends PluginBase implements Listener {
@@ -25,23 +27,25 @@ public class StatTrackAPI extends PluginBase implements Listener {
     protected StatisticHolderList statisticEntitiesList;
     protected IStorageProvider storageProvider; // Configurable storage sources. Uses MySQL right now.
 
-    // TODO: Config options
-    protected boolean config_handlePlayerStatistics = true;
-    protected boolean config_handleServerStatistics = true;
-    protected boolean config_countPlayerJoins = true; // requires above player stats ^
-    protected int config_updateTicks = 4000;
+    public ControlledSettings configuration;
 
     @Override
     public void onEnable() {
 
         try {
             plugin = this;
+
+            File cfgDirectory = this.getDataFolder();
+            this.configuration = StatTrackConfigProcessor.load(cfgDirectory, "config.json", true);
+
             this.statisticEntitiesList = new StatisticHolderList();
             this.storageProvider = new MySQLProvider("MAIN", true);
 
             this.statisticEntitiesList.setAsPrimaryList();
 
             this.getServer().getPluginManager().registerEvents(this, this);
+
+            int update = this.configuration.getOrDefault(StatTrackConfigProcessor.UPDATE_TICKS);
             this.getServer().getScheduler().scheduleDelayedRepeatingTask(this, () -> {
                 StatisticCollection[] stats = statisticEntitiesList.getStatisticEntities();
 
@@ -50,7 +54,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
                     s.fetchStatisticsFromStorage();
                 }
 
-            }, config_updateTicks, config_updateTicks, true);
+            }, update, update, true);
 
         } catch (Exception err) {
             plugin = null;
@@ -70,7 +74,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if(config_handlePlayerStatistics) {
+        if(this.configuration.getOrDefault(StatTrackConfigProcessor.TRACK_PLAYER_STATS)) {
             ITrackedHolderID id = new PlayerWrapperID(event.getPlayer());
             StatisticCollection collection = StatisticHolderList.get().createCollection(id);
             this.getServer().getScheduler().scheduleAsyncTask(this, new AsyncTask() {
@@ -80,7 +84,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
                     if(!collection.fetchStatisticsFromStorage()) {
                         getSyncLogger().warning(String.format("Failed to fetch player %s's stat records.", id));
 
-                    } else if(config_countPlayerJoins) {
+                    } else {
                         collection.createStatistic(StatisticIDs.NETWORK_PLAYER_JOIN).increment();
                     }
                 }
@@ -88,7 +92,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
             });
         }
 
-        if(config_handleServerStatistics) {
+        if(this.configuration.getOrDefault(StatTrackConfigProcessor.TRACK_SERVER_STATS)) {
             ITrackedHolderID id = new ServerWrapperID();
             StatisticCollection collection = StatisticHolderList.get().createCollection(id);
 
@@ -104,7 +108,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
-        if(config_handlePlayerStatistics) {
+        if(this.configuration.getOrDefault(StatTrackConfigProcessor.TRACK_PLAYER_STATS)) {
             ITrackedHolderID id = new PlayerWrapperID(event.getPlayer());
             Optional<StatisticCollection> check = StatisticHolderList.get().getCollection(id);
 
