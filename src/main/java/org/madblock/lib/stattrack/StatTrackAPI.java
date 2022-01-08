@@ -13,7 +13,6 @@ import org.madblock.lib.stattrack.statistic.StatisticCollection;
 import org.madblock.lib.stattrack.statistic.StatisticHolderList;
 import org.madblock.lib.stattrack.statistic.id.server.PlayerWrapperID;
 import org.madblock.lib.stattrack.statistic.id.server.ServerWrapperID;
-import org.madblock.lib.stattrack.storage.IStorageProvider;
 import org.madblock.lib.stattrack.storage.database.MySQLProvider;
 import org.madblock.lib.stattrack.util.Util;
 
@@ -25,7 +24,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
     private static StatTrackAPI plugin = null;
 
     protected StatisticHolderList statisticEntitiesList;
-    protected IStorageProvider storageProvider; // Configurable storage sources. Uses MySQL right now.
+    protected MySQLProvider storageProvider; // Configurable storage sources. Uses MySQL right now.
 
     public ControlledSettings configuration;
 
@@ -39,7 +38,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
             this.configuration = StatTrackConfigProcessor.load(cfgDirectory, "config.json", true);
 
             this.statisticEntitiesList = new StatisticHolderList();
-            this.storageProvider = new MySQLProvider("MAIN", true);
+            this.storageProvider = new MySQLProvider("MAIN");
 
             this.statisticEntitiesList.setAsPrimaryList();
 
@@ -131,7 +130,7 @@ public class StatTrackAPI extends PluginBase implements Listener {
         }
     }
 
-    public IStorageProvider getStorageProvider() { return storageProvider; }
+    public MySQLProvider getStorageProvider() { return storageProvider; }
     public StatisticHolderList getStatisticEntitiesList() { return statisticEntitiesList; }
 
     public static StatTrackAPI get() { return plugin; }

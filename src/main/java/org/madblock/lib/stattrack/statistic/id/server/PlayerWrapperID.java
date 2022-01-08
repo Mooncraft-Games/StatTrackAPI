@@ -6,8 +6,8 @@ import org.madblock.lib.stattrack.statistic.id.ITrackedHolderID;
 
 public final class PlayerWrapperID implements ITrackedHolderID {
 
-    public static final String XBOX_PLAYER_TYPE = "mco_player";
-    public static final String UNAUTHENTICATED_PLAYER_TYPE = "basic_player";
+    public static final String XBOX_PLAYER_TYPE = "mcoplayer";
+    public static final String UNAUTHENTICATED_PLAYER_TYPE = "basicplayer";
 
     private final String type;
     private final String id;
