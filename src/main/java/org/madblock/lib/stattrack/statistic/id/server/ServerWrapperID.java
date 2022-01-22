@@ -6,6 +6,8 @@ import org.madblock.lib.stattrack.StatTrackAPI;
 import org.madblock.lib.stattrack.statistic.id.ITrackedHolderID;
 import org.madblock.lib.stattrack.util.Verify;
 
+import java.util.Objects;
+
 public class ServerWrapperID implements ITrackedHolderID {
 
     public static final String TYPE = "server";
@@ -26,8 +28,7 @@ public class ServerWrapperID implements ITrackedHolderID {
     }
 
     public ServerWrapperID(String ip) {
-        Check.notEmptyString(ip, "ip");
-        this.id = ip;
+        this.id =  Check.notEmptyString(ip, "ip");
 
         if(Verify.isIPAddress(this.id))
             throw new IllegalArgumentException("IP is not of a valid format");
@@ -47,5 +48,18 @@ public class ServerWrapperID implements ITrackedHolderID {
     @Override
     public String toString() {
         return this.id+"@"+SERVER_TYPE;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ServerWrapperID that = (ServerWrapperID) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

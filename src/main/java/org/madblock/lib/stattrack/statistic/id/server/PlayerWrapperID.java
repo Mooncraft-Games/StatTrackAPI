@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import org.madblock.lib.commons.style.Check;
 import org.madblock.lib.stattrack.statistic.id.ITrackedHolderID;
 
+import java.util.Objects;
+
 public final class PlayerWrapperID implements ITrackedHolderID {
 
     public static final String XBOX_PLAYER_TYPE = "mcoplayer";
@@ -41,5 +43,18 @@ public final class PlayerWrapperID implements ITrackedHolderID {
     @Override
     public String toString() {
         return this.id+"@"+this.type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlayerWrapperID that = (PlayerWrapperID) o;
+        return type.equals(that.type) && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, id);
     }
 }

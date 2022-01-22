@@ -3,7 +3,7 @@ package org.madblock.lib.stattrack.storage.database;
 import org.madblock.database.DatabaseStatement;
 import org.madblock.lib.commons.style.Check;
 import org.madblock.lib.stattrack.StatTrackAPI;
-import org.madblock.lib.stattrack.storage.type.AbstractStatStorageEntry;
+import org.madblock.lib.stattrack.storage.type.AbstractStatStorage;
 import org.madblock.database.ConnectionWrapper;
 import org.madblock.database.DatabaseAPI;
 import org.madblock.database.DatabaseUtility;
@@ -29,11 +29,10 @@ public class MySQLProvider {
 
     public static final String CREATE_STAT_HIGHEST_TABLE = "CREATE TABLE IF NOT EXISTS stat_highest (target_type VARCHAR(16), target_id VARCHAR(64), stat_id VARCHAR(64), value DOUBLE, PRIMARY KEY (target_type, target_id, stat_id));";
 
-    public static final String CREATE_STAT_HISTORY_TABLE = "CREATE TABLE IF NOT EXISTS stat_history (target_type VARCHAR(16), target_id VARCHAR(64), stat_id VARCHAR(64), timestamp INT8, value DOUBLE, PRIMARY KEY (target_type, target_id, stat_id, timestamp));";
-
 
     // Used to track if the appropriate tables have been created
-    protected ArrayList<Class<? extends AbstractStatStorageEntry>> processedTypes;
+    @SuppressWarnings("rawtypes")
+    protected ArrayList<Class<? extends AbstractStatStorage>> processedTypes;
 
     protected String dataSourceName;
 
@@ -44,7 +43,7 @@ public class MySQLProvider {
     }
 
 
-    public TransactionStatus checkTypeInitialization(AbstractStatStorageEntry type) {
+    public TransactionStatus checkTypeInitialization(AbstractStatStorage<?> type) {
         Check.nullParam(type, "type");
 
         if(!this.processedTypes.contains(type.getClass())) {
@@ -87,4 +86,8 @@ public class MySQLProvider {
         return TransactionStatus.NO_ACTION_TAKEN;
     }
 
+
+    public String getDataSourceName() {
+        return dataSourceName;
+    }
 }
